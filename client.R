@@ -63,7 +63,7 @@ modifyPdu <- function(mac_destination, mac_source, payload){
   log("Modifying pdu")
   payload_size <- R.utils::intToBin(nchar(payload))
   while(nchar(payload_size) < 2*8){
-    payload <- paste('0', payload_size, sep = '')
+    payload_size <- paste('0', payload_size, sep = '')
   }
   modified_pdu <- paste(mac_destination, mac_source, payload_size, payload, sep = '')
   logPdu('Physical', modified_pdu)
