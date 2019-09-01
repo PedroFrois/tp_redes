@@ -1,3 +1,13 @@
+log <- function(description) {
+  time <- strftime(Sys.time(), "%D-%H:%M:%OS4", tz = '')
+  cat(time, ' ', description, '\n')
+}
+
+logPdu <- function(layer, pdu) {
+  time <- strftime(Sys.time(), "%D-%H:%M:%OS4", tz = '')
+  cat(time, ' ', 'Layer: ', layer,'\nPdu: ', pdu, '\n')
+}
+
 getFile <- function(file_path){
   if(missing(file_path)){
     file_path <- 'file01.txt'
@@ -33,26 +43,31 @@ convertMacToBin <- function(macInHex){
   return(macInBin)
 }
 
-getFromMacAddress <- function(ip){ 
+getSourceMacAddress <- function(ip){
+  log('Getting source Mac Address') 
   command <- paste('ifconfig | grep -A 4 ', ip, ' | grep ether | tr -s [:blank:] | cut -d" " -f3', sep = '')
   mac <- system(command, intern = TRUE)
-  cat("FROM MAC ADDRESS: ", mac , "\n")
+  log(paste("Mac Address:", mac))
   return(convertMacToBin(mac))
 }
 
-getToMacAddress <- function(ip){
+getDestinationMacAddress <- function(ip){
+  log('Getting destination Mac Address')
   command <- paste('arp ',ip,'| grep ether | tr -s [:blank:] | cut -d" " -f3', sep = '')
   mac <- system(command, intern = TRUE)
-  cat("TO MAC ADDRESS: ", mac , "\n")
+  log(paste("Mac Address:", mac))
   return(convertMacToBin(mac))
 }
 
-modifyPdu <- function(mac_to, mac_from, payload){
+modifyPdu <- function(mac_destination, mac_source, payload){
+  log("Modifying pdu")
   payload_size <- R.utils::intToBin(nchar(payload))
   while(nchar(payload_size) < 2*8){
     payload <- paste('0', payload_size, sep = '')
   }
-  return(paste(mac_to, mac_from, payload_size, payload, sep = ''))
+  modified_pdu <- paste(mac_destination, mac_source, payload_size, payload, sep = '')
+  logPdu('Physical', modified_pdu)
+  return(modified_pdu)
 }
 
 hexToBin <- function(string_array_hex){
@@ -67,49 +82,61 @@ testColision <- function(){
   }
 }
 
-getIpFromPackage <- function(package){
+getIpFromPackage <- function(package, destination){
+  if(destination){
+    ip_description <- 'destination ip'
+    byte_blocks <- c(0:3)
+  } else{
+    ip_description <- 'source ip'
+    byte_blocks <- c(4:7)
+  }
+  log(paste('Getting', ip_description,'from package'))
   ip <- ''
-  for (i in 0:3) {
+  for (i in byte_blocks) {
     auxBin <- substr(package, start = 1+8*i, stop = 8+8*i)  
     auxDec <- strtoi(auxBin, 2L)
     ip <- paste(ip,auxDec,'.', sep = '')
   }
   ip <- substr(ip, start = 1, stop = (nchar(ip)-1)) #remove last dot
+  log(paste('Ip:',ip))
   return(ip)
 }
 
-sendToServer <- function(ip_to, port, file){
-  cat('File to send: ', file, '\n')
-
-  writeLines('Opening Connection...')
+sendToServer <- function(ip_destination, port, file){
+  log('Opening Connection...')
   
   while(testColision()){
-    writeLines('Colision detected!')
+    log('Colision detected!')
     Sys.sleep(sample(1:3,1))
   }
   
-  connection <- socketConnection(host = ip_to, port = port, blocking = TRUE,
+  connection <- socketConnection(host = ip_destination, port = port, blocking = TRUE,
     server = FALSE, open = 'r+')
+  log('Connection openned')
   writeLines(file, connection)
   close(connection)
+  log('Connection closed')
 }
 
 physical <- function(package){
-  ip_to <- getIpFromPackage(package)
-  ip_from <- '' #ADD IP -----------------------------------------------------------------
-  mac_to <- getToMacAddress(ip_to)
-  mac_from <- getFromMacAddress(ip_from)
+  log('Creating frame from physical layer')
+  ip_destination <- getIpFromPackage(package, TRUE)
+  ip_source <- getIpFromPackage(package, FALSE)
+  mac_destination <- getDestinationMacAddress(ip_destination)
+  mac_source <- getSourceMacAddress(ip_source)
   
-  frame <- modifyPdu(mac_to, mac_from, package)
+  frame <- modifyPdu(mac_destination, mac_source, package)
 
   port <- '' #ADD PORT ------------------------------------------------------------------
 
-  sendToServer(ip_to, port, frame)
+  sendToServer(ip_destination, port, frame)
 }
 
 network <- function(){
+  log('Getting package from network layer')
   #file must contain the ip (in binary, only numbers and in bytes) followed by the payload
   package <- getFile()
+  logPdu('Network', package)
   return(package)
 }
 
