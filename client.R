@@ -52,6 +52,9 @@ getSourceMacAddress <- function(ip){
 }
 
 getDestinationMacAddress <- function(ip){
+  log('Pinging destination ip')
+  command <- (paste('ping', ip, '-c 5'))
+  system(command)
   log('Getting destination Mac Address')
   command <- paste('arp ',ip,'| grep ether | tr -s [:blank:] | cut -d" " -f3', sep = '')
   mac <- system(command, intern = TRUE)
@@ -68,10 +71,6 @@ modifyPdu <- function(mac_destination, mac_source, payload){
   modified_pdu <- paste(mac_destination, mac_source, payload_size, payload, sep = '')
   logPdu('Physical', modified_pdu)
   return(modified_pdu)
-}
-
-hexToBin <- function(string_array_hex){
-  return(R.utils::intToBin(strtoi(string_array_hex, base = 16L)))
 }
 
 testColision <- function(){
@@ -105,14 +104,15 @@ getIpFromPackage <- function(package, destination){
 sendToServer <- function(ip_destination, port, file){
   log('Opening Connection...')
   
+  connection <- socketConnection(host = ip_destination, port = port, blocking = TRUE,
+    server = FALSE, open = 'r+')
+  log('Connection openned')
+  
   while(testColision()){
     log('Colision detected!')
     Sys.sleep(sample(1:3,1))
   }
-  
-  connection <- socketConnection(host = ip_destination, port = port, blocking = TRUE,
-    server = FALSE, open = 'r+')
-  log('Connection openned')
+
   writeLines(file, connection)
   close(connection)
   log('Connection closed')
@@ -122,10 +122,10 @@ physical <- function(package){
   log('Creating frame from physical layer')
   ip_destination <- getIpFromPackage(package, TRUE)
   ip_source <- getIpFromPackage(package, FALSE)
-  mac_destination <- getDestinationMacAddress(ip_destination)
-  mac_source <- getSourceMacAddress(ip_source)
+  mac_destination_bin <- getDestinationMacAddress(ip_destination)
+  mac_source_bin <- getSourceMacAddress(ip_source)
   
-  frame <- modifyPdu(mac_destination, mac_source, package)
+  frame <- modifyPdu(mac_destination_bin, mac_source_bin, package)
 
   port <- '' #ADD PORT ------------------------------------------------------------------
 
