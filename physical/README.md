@@ -31,6 +31,15 @@ install.packages("R-utils")
   - deverá conter o ip de destino(4 bytes), ip de origem(4 bytes), tamanho do payload(2 bytes) e o payload, sendo que os ips e o tamanho do payload devem estar em bits. Ex: 10101010101010101010101010101010101010101010101010101010101010101010101010101010payload
 
 *Teste*
-- ![Servidor esperando cliente](/testImagesFolder/testServerListening.png)
-- ![Cliente recebendo pacote da camada de rede; montando o quadro; abrindo a conexão com o servidor; teste de colisão; envio finalizado; conexão terminada](/testImagesFolder/testClient.png)
-- ![Servidor recebendo quadro; retirando cabeçalho; e salvando em arquivo](/testImagesFolder/testServer.jpeg)
+
+- Servidor esperando cliente
+
+![Servidor esperando cliente](testImagesFolder/testServerListening.png)
+
+- Cliente recebendo pacote da camada de rede; montando o quadro; abrindo a conexão com o servidor; teste de colisão; envio finalizado; conexão terminada
+
+![Cliente recebendo pacote da camada de rede; montando o quadro; abrindo a conexão com o servidor; teste de colisão; envio finalizado; conexão terminada](testImagesFolder/testClient.jpeg)
+
+- Servidor recebendo quadro; retirando cabeçalho; e salvando em arquivo
+
+![Servidor recebendo quadro; retirando cabeçalho; e salvando em arquivo](testImagesFolder/testServer.jpeg)
