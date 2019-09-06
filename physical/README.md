@@ -25,5 +25,12 @@ install.packages("R-utils")
 - Na máquina com o arquivo "client.R" executar o comando:
 ```Rscript client.R```
 
-*Escopo e decisões técnicas*:
+*Decisões técnicas*:
+- A PDU recebida pela parte física:
+  - deverá estar escrita em um arquivo chamado "file01.txt" na mesma pasta do código fonte "client.R"
+  - deverá conter o ip de destino(4 bytes), ip de origem(4 bytes), tamanho do payload(2 bytes) e o payload, sendo que os ips e o tamanho do payload devem estar em bits. Ex: 10101010101010101010101010101010101010101010101010101010101010101010101010101010payload
 
+*Teste*
+- [Servidor esperando cliente]()
+- [Cliente recebendo pacote da camada de rede; montando o quadro; abrindo a conexão com o servidor; teste de colisão; envio finalizado; conexão terminada](https://github.com/PedroFrois/tp_redes/blob/master/physical/testImagesFolder/testServerListening.png)
+- [Servidor recebendo quadro; retirando cabeçalho; e salvando em arquivo](https://github.com/PedroFrois/tp_redes/blob/master/physical/testImagesFolder/testServer.jpeg)
