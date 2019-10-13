@@ -18,10 +18,15 @@ getFile <- function(file_path){
   return (data)
 }
 
-convertPayloadToBin <- function(payload_size, payload) {
+getPackagePayload <- function(package) {
+  payload <- substring(package, 81) 
+  return(payload)
+}
+
+convertPayloadToBin <- function(payload) {
   chars <- strsplit(payload, split= "")[[1]]
   chars_bin <- ''
-  for (i in 1:payload_size) {
+  for (i in 1:length(payload)) {
      char_int <- strtoi(charToRaw(chars[i]),16L)
      char_bin <- R.utils::intToBin(char_int)
      chars_bin <- paste(chars_bin, char_bin, sep='')
@@ -120,15 +125,19 @@ sendToServer <- function(ip_destination, port, file){
 
 physical <- function(package){
   log('Creating frame from physical layer')
+  package_payload <- getPackagePayload(package)
+  package_payload_bin <- convertPayloadToBin(package_payload)
+  package <- paste(substr(package, start = 0, stop = 80), package_payload_bin, sep = "")
+  
   ip_destination <- getIpFromPackage(package, TRUE)
   ip_source <- getIpFromPackage(package, FALSE)
+  
   mac_destination_bin <- getDestinationMacAddress(ip_destination)
   mac_source_bin <- getSourceMacAddress(ip_source)
   
   frame <- modifyPdu(mac_destination_bin, mac_source_bin, package)
 
   port <- '' #ADD PORT ------------------------------------------------------------------
-
   sendToServer(ip_destination, port, frame)
 }
 
@@ -141,8 +150,18 @@ network <- function(){
 }
 
 client <- function(){
-  package <- network()
-  physical(package)
+  #package <- network()
+  
+  stream <- fifo(description = "R_pipe", open = "r",)
+  cat("Pipe is open: ", isOpen(stream),"\n")
+  while(isOpen(stream)){ 
+    package <- readLines(stream)
+    if(length(package) != 0){
+      log('Getting package from network layer')
+      logPdu('Named pipe - Network', package)
+      physical(package)
+    }
+  }
 }
 
 client()
