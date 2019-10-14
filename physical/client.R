@@ -152,7 +152,7 @@ network <- function(){
 client <- function(){
   #package <- network()
   
-  stream <- fifo(description = "R_pipe", open = "r",)
+  stream <- fifo(description = "net_phy", open = "r",)
   cat("Pipe is open: ", isOpen(stream),"\n")
   while(isOpen(stream)){ 
     package <- readLines(stream)
