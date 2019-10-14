@@ -17,6 +17,9 @@ getPackageFromFrame <- function(frame){
 }
 
 physical <- function(){
+  log('Openning pipe')
+  stream <- fifo(description = "phy_net", open = "w",)
+
   while(TRUE){
     log('Listenning...')
     connection <- socketConnection(port = '', blocking = TRUE, #ADD PORT -------- 
@@ -26,9 +29,10 @@ physical <- function(){
     frame <- readLines(connection, 1)
     logPdu('Physical', frame)
     package <- getPackageFromFrame(frame)
-    file_name <- 'file02.txt'
-    log(paste('Saving package to file',file_name))
-    writeLines(package, file_name)
+    
+    log(cat('Pipe is open: ', isOpen(stream)))
+    log('Writing package to pipe')
+    writeLines(package, stream)
   }
 }
 
