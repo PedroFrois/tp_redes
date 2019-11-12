@@ -12,6 +12,7 @@ import "io/ioutil"
 
 var writerPath string
 
+//Código cria um pipe num diretorio temporario. Executa o código do writer.go e lê do pipe
 func main() {
 	flag.StringVar(&writerPath, "writer", "./writer", "path to writer")
 	flag.Parse()
@@ -32,6 +33,7 @@ func main() {
 	// Open named pipe for reading
 	fmt.Println("Opening named pipe for reading")
 	stdout, _ := os.OpenFile(namedPipe, os.O_RDONLY, 0600)
+	//OpenFile(nome do pipe, leitura ou escrita, permissão do arquivo que será criado caso já não exista)
 	fmt.Println("Reading")
 
 	var buff bytes.Buffer
