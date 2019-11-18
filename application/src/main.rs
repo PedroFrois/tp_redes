@@ -1,16 +1,19 @@
+#![allow(dead_code)]
 mod smtp;
-use smtp::client;
-use smtp::server;
-//use smtp::server::storage::email::Email;
+mod storage;
+mod settings;
+mod pop;
+
+//use smtp::client;
+//use smtp::server;
+use pop::client as p_client;
+use pop::server as p_server;
+use storage::email::Email;
 
 fn main() {
-    let msgs = client::interface::send("teste@sadas.com","teste@teste.com","jfhansdjfuiasdnfuijasdnfsjfui   \n   nasdfuibasdfibasdfuiasdnfsjdfnasdjfuinasdifjpnasdjfuisdabnfyhasdbpnfjasdnfasdujfbaspdij fhdasfu adshmfuasdhfasudmhfasdunfah dufhasdfuasndfoasdnfasdufhasdpufijsdaopifhadpasdf");
-    let mut e = server::interface::init();
+    let msgs = p_client::send();
     for msg in msgs{
-        e = server::interface::parse_msg(&msg,e);
+        let resp = p_server::parse_msg(msg);
+        println!("{}",resp);
     }
-    println!("{} ",e.domain);
-    println!("{} ",e.to);
-    println!("{} ",e.from);
-    println!("{} ",e.data);
 }

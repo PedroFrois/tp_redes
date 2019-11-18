@@ -1,4 +1,4 @@
-use super::settings; 
+use super::super::settings; 
 
 pub fn send(from:&str,to:&str,data:&str) -> Vec<String>{
     let mut msgs:Vec<String> = vec![];
