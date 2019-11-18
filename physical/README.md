@@ -12,6 +12,8 @@ install.packages("R-utils")
 
 *Preparar execução*:
 - Colocar os arquivos client.R e server.R em computadores diferentes
+- Criar pipes com o comando 
+```mkfifo net_phy``` e ```mkfifo phy_net``` dentro da pasta "pipes"
 - No computador com o client.R escrever um arquivo "file01.txt" contendo a pdu recebida da camada de rede
   - ip do destino (em 4 bytes)
   - ip da origem (em 4 bytes)
