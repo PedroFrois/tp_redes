@@ -36,12 +36,12 @@ def generateDatagram(transportPdu, dest):
 	for o in octects:
 		destination += bin(int(o))[2:]
 
-	datagram += source + destination
+	datagram += source + destination + transportPdu
 
 	#print(datagram)
 	return datagram
 
-def checkRoutingTable(destination):
+def checkRoutingTable(dest):
 	with open('routing_table.csv') as csvfile:
 		readCSV = csv.reader(csvfile, delimiter=';')
 		header = True
@@ -57,22 +57,12 @@ def checkRoutingTable(destination):
 				return gateway
 			count, ok = 0, 0
 			networkF,  netmaskF, destinationF = -1, 0, 0
-			while (count < 4):
-				networkF = network.find('.', networkF+1)
-				netmaskF = netmask.find('.', netmaskF+1)
-				destinationF = destination.find('.', destinationF+1)
-				if(networkF == -1):
-					networkF = len(network)
-				if(netmaskF == -1):
-					netmaskF = len(netmask)
-				if(destinationF == -1):
-					destinationF = len(destination)
-				networkBits = network[:networkF-1]
-				netmaskBits = netmask[:netmaskF-1]
-				destinationBits = gateway[:destinationF-1]
-				if(networkBits and netmaskBits == destinationBits and netmaskBits):
+			octectsD = dest.split('.')
+			octectsM = netmask.split('.')
+			octectsN = network.split('.')
+			for i in range(4):
+				if int(octectsD[i]) & int(octectsM[i]) == int(octectsN[i]) & int(octectsM[i]):
 					ok+=1
-				count+=1
 			if (ok == 4):
 				return gateway
 
@@ -110,12 +100,14 @@ while True:
 		datagram = generateDatagram(line, rout)
 		#enviar datagrama
 		net_phy.writelines(datagram)
+		print(datagram)
 
 	line = phy_net.readline()
 	if line:
 		#receber pdu fisica
 		message = line[32:]
 		net_tra.writelines(message)
+		print(message)
 
 tra_net.close()
 net_tra.close()
