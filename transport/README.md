@@ -68,8 +68,8 @@
 -- Teste
 	
 	-- Teste de funcionamento do udp-client
-	![textoAlternativo](/Users/mddm/Desktop/teste1.png)
-	![textoAlternativo](/Users/mddm/Desktop/teste2.png)
+	![textoAlternativo](./testImagesFolder/teste1.png)
+	![textoAlternativo](./testImagesFolder/teste2.png)
 
 	-- Teste de funcionamento do udp-server
-	![textoAlternativo](/Users/mddm/Desktop/teste3.png)
+	![textoAlternativo](./testImagesFolder/teste3.png)
