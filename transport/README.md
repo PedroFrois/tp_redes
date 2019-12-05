@@ -65,11 +65,9 @@
 	-- Log
 		Os logs são sempres impressos no terminal, com o time-stamp e a PDU atual
 
--- Teste
+-- Testes
 	
-	-- Teste de funcionamento do udp-client
-	![textoAlternativo](testImagesFolder/teste1.png)
-	![textoAlternativo](testImagesFolder/teste2.png)
+![Teste udp-client](testImagesFolder/teste1.png)
+![Teste udp-client com comentários](testImagesFolder/teste2.png)
 
-	-- Teste de funcionamento do udp-server
-	![textoAlternativo](testImagesFolder/teste3.png)
+![Teste udp-server](testImagesFolder/teste3.png)
